@@ -1,67 +1,65 @@
-const todoInput = document.getElementById('todo-input');
-const addTodoBtn = document.getElementById('add-btn');
-const todoList = document.getElementById('todo-list');
-const deleteAllTodosBtn = document.getElementById('delete-all-todos');
+window.addEventListener("load", () => {
+  const form = document.querySelector("#new-task-form");
+  const input = document.querySelector("#new-task-input");
+  const list_el = document.querySelector("#tasks");
 
-todoInput.addEventListener('input', onInputTodo);
-addTodoBtn.addEventListener('click', onAddTodo);
-deleteAllTodosBtn.addEventListener('click', onDeleteAll);
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
 
-function onInputTodo(event) {
-	if (event.target.value.length > 0) {
-		addTodoBtn.removeAttribute('disabled');
-	} else {
-		addTodoBtn.setAttribute('disabled', true);
-	}
-}
+    const task = input.value;
 
-function onAddTodo() {
-	const todoLi = createTodoLi(todoInput.value);
+    if (!task) {
+      alert("Please write a task!");
+      return;
+    }
+    const task_el = document.createElement("div");
+    task_el.classList.add("task");
 
-	if (todoLi) {
-		todoList.appendChild(todoLi);
-	}
-	todoInput.value = '';
-	addTodoBtn.setAttribute('disabled', true);
+    const task_content_el = document.createElement("div");
+    task_content_el.classList.add("content");
 
-	updateNoOfTodos();
-}
+    task_el.appendChild(task_content_el);
 
-function createTodoLi(text) {
-	if (text.trim().length === 0) {
-		alert('Introduceti un task valid!');
-		return;
-	}
+    const task_input_el = document.createElement("input");
+    task_input_el.classList.add("text");
+    task_input_el.type = "text";
+    task_input_el.value = task;
+    task_input_el.setAttribute("readonly", "readonly");
+    task_content_el.appendChild(task_input_el);
 
-	const todoLi = document.createElement('li');
-	const todoTextSpan = document.createElement('span');
-	const deleteTodoBtn = document.createElement('button');
+    const task_actions_el = document.createElement("div");
+    task_actions_el.classList.add("actions");
 
-	todoTextSpan.innerHTML = text;
-	deleteTodoBtn.innerHTML = 'X';
+    const task_edit_el = document.createElement("button");
+    task_edit_el.classList.add("edit");
+    task_edit_el.innerHTML = "Edit";
 
-	deleteTodoBtn.addEventListener('click', function (e) {
-		e.target.parentNode.remove();
-		updateNoOfTodos();
-	});
+    const task_delete_el = document.createElement("button");
+    task_delete_el.classList.add("delete");
+    task_delete_el.innerHTML = "Delete";
 
-	todoLi.appendChild(todoTextSpan);
-	todoLi.appendChild(deleteTodoBtn);
+    task_actions_el.appendChild(task_edit_el);
+    task_actions_el.appendChild(task_delete_el);
 
-	return todoLi;
-}
+    task_el.appendChild(task_actions_el);
 
-function onDeleteAll() {
-	console.log('test');
-	const allTodos = todoList.querySelectorAll('li');
-	console.log(allTodos);
-	allTodos.forEach((todoLi) => todoLi.remove());
-	updateNoOfTodos();
-}
+    list_el.appendChild(task_el);
 
-function updateNoOfTodos() {
-	const noOfTodoContainer = document.getElementById('no-of-todos');
-	const noOfTodos = todoList.querySelectorAll('li').length;
-	noOfTodoContainer.innerHTML =
-		noOfTodos + ' ' + (noOfTodos == 1 ? 'todo' : ' todos');
-}
+    input.value = "";
+
+    task_edit_el.addEventListener("click", () => {
+      if (task_edit_el.innerText.toLowerCase() == "edit") {
+        task_input_el.removeAttribute("readonly");
+        task_input_el.focus();
+        task_edit_el.innerText = "save";
+      } else {
+        task_input_el.setAttribute("readonly", "readonly");
+        task_edit_el.innerText = "edit";
+      }
+    });
+
+    task_delete_el.addEventListener("click", () => {
+      list_el.removeChild(task_el);
+    });
+  });
+});
